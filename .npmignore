@@ -1,0 +1,17 @@
+node_modules
+src
+.gitignore
+.github
+.fernignore
+.prettierrc.yml
+package-lock.json
+medusa-config.js
+.yarnrc.yml
+.env.template
+tsconfig.json
+tsconfig.admin.json
+tsconfig.server.json
+tsconfig.spec.json
+yarn.lock
+.babelrc.js
+tsconfig.admin.json

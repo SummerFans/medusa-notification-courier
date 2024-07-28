@@ -1,0 +1,32 @@
+name: 'Preview Deploy'
+
+on: 
+  push:
+    branches:
+      - preview
+
+jobs:
+  preview:
+    runs-on: ubuntu-lastest
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build
+        
+      - name: Publish preview to npm
+        run: |
+          npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN} 
+          npm publish --access public
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+    
