@@ -2,3 +2,5 @@ node_modules
 yarn.lock
 .env
 .DS_STORE
+dist/
+package-lock.json
