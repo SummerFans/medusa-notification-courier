@@ -4,7 +4,8 @@ import {
   MedusaError,
 } from "@medusajs/utils";
 import { CourierClient } from "@trycourier/courier";
-import { RoutingMethod } from "@trycourier/courier/api";
+import { templates } from "@trycourier/courier/api";
+// import { MessageData, RoutingMethod } from "@trycourier/courier/api";
 
 export interface CourierNotificationServiceOptions {
   auth_token: string;
@@ -23,7 +24,8 @@ export class CourierNotificationService extends AbstractNotificationProviderServ
   ) {
     super();
     this.logger_ = logger;
-    if (!options.auth_token){
+
+    if (!options.auth_token) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         `No notification information provided auth_token`
@@ -44,31 +46,26 @@ export class CourierNotificationService extends AbstractNotificationProviderServ
         `No notification information provided`
       );
     }
-
+    this.logger_.debug("[Courier Notification Service]: sending")
     const message = {
-      template: notification.template,
       to: {
-        email: notification.to,
+        email: notification.to
       },
-      data: notification.data as { [key: string]: any } | undefined,
-      routing: {
-        method: RoutingMethod.Single,
-        channels: ["email"],
-      },
+      template: notification.template,
+      data: notification.data
     };
 
     try {
       let r = await this.courier.send({
         message,
       });
-      return {id:r.requestId};
+      return { id: r.requestId };
     } catch (error) {
       const errorCode = error.code;
       const responseError = error.response?.body?.errors?.[0];
       throw new MedusaError(
         MedusaError.Types.UNEXPECTED_STATE,
-        `Failed to send email: ${errorCode} - ${
-          responseError?.message ?? "unknown error"
+        `Failed to send email: ${errorCode} - ${responseError?.message ?? "unknown error"
         }`
       );
     }
