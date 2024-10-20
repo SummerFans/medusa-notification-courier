@@ -1,6 +1,6 @@
 {
   "name": "medusa-notification-courier",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Courier notification provider for Medusa v2",
   "main": "dist/index.js",
   "repository": {
