@@ -15,6 +15,9 @@ type InjectedDependencies = {
   logger: Logger;
 };
 export class CourierNotificationService extends AbstractNotificationProviderService {
+
+  static identifier = "notification-courier"
+  
   protected courier: CourierClient;
   protected logger_: Logger;
 
