@@ -1,6 +1,6 @@
 {
   "name": "medusa-notification-courier",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Courier notification provider for Medusa v2",
   "main": "dist/index.js",
   "repository": {
@@ -32,9 +32,9 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@medusajs/medusa": "rc",
-    "@medusajs/types": "rc",
-    "@medusajs/utils": "rc",
+    "@medusajs/medusa": "2.0.0",
+    "@medusajs/types": "2.0.0",
+    "@medusajs/utils": "2.0.0",
     "@trycourier/courier": "^6.2.2"
   },
   "keywords": [
