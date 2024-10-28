@@ -4,11 +4,10 @@ import {
   MedusaError,
 } from "@medusajs/utils";
 import { CourierClient } from "@trycourier/courier";
-import { templates } from "@trycourier/courier/api";
-// import { MessageData, RoutingMethod } from "@trycourier/courier/api";
 
 export interface CourierNotificationServiceOptions {
-  auth_token: string;
+  authToken: string;
+  useCourierTemplate?: boolean;
 }
 
 type InjectedDependencies = {
@@ -17,9 +16,10 @@ type InjectedDependencies = {
 export class CourierNotificationService extends AbstractNotificationProviderService {
 
   static identifier = "notification-courier"
-  
+
   protected courier: CourierClient;
   protected logger_: Logger;
+  protected _options: CourierNotificationServiceOptions
 
   constructor(
     { logger }: InjectedDependencies,
@@ -27,8 +27,9 @@ export class CourierNotificationService extends AbstractNotificationProviderServ
   ) {
     super();
     this.logger_ = logger;
+    this._options = options;
 
-    if (!options.auth_token) {
+    if (!this._options.authToken) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         `No notification information provided auth_token`
@@ -36,7 +37,7 @@ export class CourierNotificationService extends AbstractNotificationProviderServ
     }
 
     this.courier = new CourierClient({
-      authorizationToken: options.auth_token,
+      authorizationToken: this._options.authToken,
     });
   }
 
@@ -50,17 +51,43 @@ export class CourierNotificationService extends AbstractNotificationProviderServ
       );
     }
     this.logger_.debug("[Courier Notification Service]: sending")
-    const message = {
-      to: {
-        email: notification.to
-      },
-      template: notification.template,
-      data: notification.data
-    };
+    let message;
+    if (this._options.useCourierTemplate) {
+      message = {
+        to: {
+          email: notification.to
+        },
+        template: notification.template,
+        data: notification.data
+      };
+    } else {
+      message = {
+        to: {
+          email: notification.to,
+        },
+        content: {
+          version: "2022-01-01",
+          elements: [
+            {
+              type: "channel",
+              channel: "email",
+              raw: {
+                subject: notification.data?.subject || 'notification',
+                html: notification.template,
+              },
+            },
+          ],
+        },
+        routing: {
+          method: "single",
+          channels: ["email"],
+        },
+      }
+    }
 
     try {
       let r = await this.courier.send({
-        message,
+        message
       });
       return { id: r.requestId };
     } catch (error) {
